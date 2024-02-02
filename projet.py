@@ -1,5 +1,8 @@
 import json as j
 
+import test
+
+
 class box():
     w : int
     h : int
@@ -31,6 +34,23 @@ def triHauteur(l):
     else:
         return fusion(triHauteur(l[:len(l)//2]) , triHauteur(l[len(l)//2:]))
  
-donnees = triHauteur(donnees)
-print(donnees)
-print(len(donnees))
+#donnees = triHauteur(donnees)
+#print(donnees)
+#print(len(donnees))
+
+def convert_sorted_to_object_list(sortedList): # on converti la list trier en une list d'objet Rect
+    listRect = []
+    for dic in sortedList:
+        current = test.rect(dic['h'], dic['w'])
+        listRect.append(current)
+    return listRect
+
+
+infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees))) # on appelle la methode FBS du fichier test
+
+
+
+
+if __name__ == '__main__':
+   for obj in infiniteConteneur.list_contain:
+       print(obj)
