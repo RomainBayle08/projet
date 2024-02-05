@@ -3,7 +3,7 @@ import json as j
 import test
 
 
-class box():
+"""class box():
     w : int
     h : int
     def __init__(self, witdh, height):
@@ -12,7 +12,7 @@ class box():
       
 H : int
 W : int
-H, W = 10, 10 #définition de la hauteur et largeur des boites
+H, W = 10, 10 #définition de la hauteur et largeur des boites"""
 
 with open("donnee_rect.json", "r") as fichier:
     # Charger les données depuis le fichier JSON
@@ -46,11 +46,18 @@ def convert_sorted_to_object_list(sortedList): # on converti la list trier en un
     return listRect
 
 
-infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees))) # on appelle la methode FBS du fichier test
+
+
+
+list_rect = convert_sorted_to_object_list(triHauteur(donnees))
+
+infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)),10,10) # on appelle la methode FBS du fichier test
 
 
 
 
 if __name__ == '__main__':
-   for obj in infiniteConteneur.list_contain:
-       print(obj)
+    for box in infiniteConteneur:
+        for obj in box.list_contain:
+            print(obj)
+        print('\n')
