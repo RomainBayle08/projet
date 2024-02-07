@@ -1,4 +1,4 @@
-import random , copy
+
 
 
 class box:
@@ -25,22 +25,8 @@ class rect:
         self.w = w
 
 
-class all_boxes:
-    list_boxes =None
-    def __init__(self):
-        self.list_boxes = []
-    def add_box(self,this_box):
-        self.list_boxes.insert(len(self.list_boxes)-1,this_box)
 
 
-listRect = []
-
-i = 10
-
-while i > 0:
-    current = rect(random.randint(1, 10), random.randint(1, 10))
-    listRect.append(current)
-    i -= 1
 
 
 def findMinWidth(listRect):
@@ -52,21 +38,7 @@ def findMinWidth(listRect):
     return min_rect
 
 
-"""def FBS(list_rect, conteneur, list_cont):
-    etage = 0
-    remaing_H = conteneur.H
-    while len(list_rect) > 0:
-        current = list_rect.pop(0)
-        remaing_H -=current.h
-        if remaing_H >= 0:
-            best_fit_algo(list_rect, current, conteneur, etage)
-            etage += 1
-            print(conteneur.list_contain)
-        else:
-            new_cont = box(conteneur.H, conteneur.W)
-            FBS(list_rect, new_cont, list_cont)
 
-    list_cont.append(conteneur)"""
 
 def FBS(list_rect, conteneur_H,conteneur_W):
     list_cont = []
@@ -119,9 +91,4 @@ def best_fit_algo(list_rect, current, conteneur, etage):
 
 
 
-if __name__ == '__main__':
-    for r in listRect:
-        print(r.h, r.w)
-    conteneur = FBS(listRect)
-    for rect in conteneur.list_contain:
-        print(rect)
+
