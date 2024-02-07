@@ -7,7 +7,7 @@ with open("donnee_rect.json", "r") as fichier:
     donnees = j.load(fichier)
 
 
-def fusion(l1: list, l2: list)->list:
+def fusion(l1: list, l2: list) -> list:
     """
     DESCRIPTION
     Fusionne deux listes de dictionnaires de maniere recursive de maniere decroissante par hauteur.
@@ -27,13 +27,13 @@ def fusion(l1: list, l2: list)->list:
         return l2
     elif len(l2) == 0:
         return l1
-    elif l1[0]["h"] >= l2[0]["h"]: 
+    elif l1[0]["h"] >= l2[0]["h"]:
         return [l1[0]] + fusion(l1[1:], l2)
     else:
         return [l2[0]] + fusion(l1, l2[1:])
 
 
-def triHauteur(l)->list:
+def triHauteur(l) -> list:
     """
     DESCRIPTION
     Fonction de trie fusion d'une liste de dictionnaire
@@ -51,10 +51,11 @@ def triHauteur(l)->list:
     if len(l) == 1:
         return l
     else:
-        #trie de manière recursive la liste en utilisant la fonction fusion sur les demies listes.
+        # trie de manière recursive la liste en utilisant la fonction fusion sur les demies listes.
         return fusion(triHauteur(l[:len(l) // 2]), triHauteur(l[len(l) // 2:]))
 
-def convert_sorted_to_object_list(sortedList: list)->list :
+
+def convert_sorted_to_object_list(sortedList: list) -> list:
     """
     DESCRIPTION
     Fonction de conversion d'une liste de dictionnaire en liste d'objet 'rect'
@@ -70,16 +71,17 @@ def convert_sorted_to_object_list(sortedList: list)->list :
     Liste d'objet 'rect'
     """
     listRect: list = []
-    for dic in sortedList: #convertir chaque dictionnaire en objet 'rect'
+    for dic in sortedList:  # convertir chaque dictionnaire en objet 'rect'
         current: test.rect = test.rect(dic['h'], dic['w'])
         listRect.append(current)
     return listRect
 
-def printConteneurs(w: int,h: int, donnees : list):
+
+def printConteneurs(w: int, h: int, donnees: list):
     """
     DESCRIPTION
     Procedure qui cree, rempli et affiche le contenu des conteneurs
-    
+
     ------------------------------------
 
     ENTREE
@@ -91,11 +93,29 @@ def printConteneurs(w: int,h: int, donnees : list):
     SORTIE
     donnees: list -> liste de dictionnaires
     """
-    list_rect: list = convert_sorted_to_object_list(triHauteur(donnees)) #trie les donnees par hauteur de maniere decroissante
-    finiteConteneur: list = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)), w,h)  # on appelle la methode FBS du fichier test
-    for box in finiteConteneur: #affichage des conteneurs
+    list_rect: list = convert_sorted_to_object_list(
+    triHauteur(donnees))  # trie les donnees par hauteur de maniere decroissante
+    finiteConteneur: list = test.FBS(list_rect, w, h)  # on appelle la methode FBS du fichier test
+    for box in finiteConteneur:  # affichage des conteneurs
         for obj in box.list_contain:
             print(obj)
-        print('\n') #saut de ligne
+        print('\n')  # saut de ligne
 
-printConteneurs(10,10,donnees)
+
+
+list_rect = convert_sorted_to_object_list(triHauteur(donnees))
+
+#infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)), 10,10)# on appelle la methode FBS du fichier test
+
+infinite_cont = test.handle_infinite_strip(list_rect)
+
+tested = test.etage_to_cont(infinite_cont)
+
+
+
+
+if __name__ == '__main__':
+    for box in tested:
+        for obj in box.list_contain:
+            print(obj)
+        print('\n')
