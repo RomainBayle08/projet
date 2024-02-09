@@ -103,19 +103,67 @@ def printConteneurs(w: int, h: int, donnees: list):
 
 
 
+def infinite_strip(list_rect):# retourne un conteneur (Box)
+    etage = 0
+    conteneur = test.box(1000,10)
+    while len(list_rect)> 0:
+        current = list_rect.pop(0)
+        best_fit_width_algo(list_rect, current, conteneur, etage)
+        etage += 1
+
+    return conteneur
+
+def best_fit_width_algo(list_rect, current, conteneur, etage):
+    conteneur.add(etage, current.h, current.w)
+    remaing_W = conteneur.W - current.w
+
+    while remaing_W > 0:
+        min = findMinWidth(list_rect)
+        if remaing_W - min.w < 0:
+            break
+        else:
+            conteneur.add(etage, min.h, min.w)
+            remaing_W -= min.w
+
+def findMinWidth(listRect):
+    min_rect = test.rect(1000000, 1000000)
+    for r in listRect:
+        if r.w < min_rect.w:
+            min_rect = r
+    listRect.remove(min_rect)
+    return min_rect
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 list_rect = convert_sorted_to_object_list(triHauteur(donnees))
 
 #infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)), 10,10)# on appelle la methode FBS du fichier test
 
-infinite_cont = test.handle_infinite_strip(list_rect)
+infinite_cont = infinite_strip(list_rect)
 
-tested = test.etage_to_cont(infinite_cont)
+etage_to_cont = test.etage_to_cont(infinite_cont)
+
+#best_fit_strip_test = test.best_fit_strip_algo(etage_to_cont)
 
 
 
 
 if __name__ == '__main__':
-    for box in tested:
-        for obj in box.list_contain:
-            print(obj)
-        print('\n')
+
+    for rect in infinite_cont.list_contain:
+        print(rect)

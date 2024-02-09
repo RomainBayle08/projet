@@ -66,22 +66,37 @@ def fill_cont(list_rect, conteneur_H,conteneur_W):
     return conteneur
 
 
-def handle_infinite_strip(list_rect):# retourne un conteneur (Box)
-    return FBS(list_rect,100000,10)[0]
+
 
 
 def etage_to_cont(infinite_cont):
     list_cont = []
-    current_etage = -1;
-    current_cont = None
+    current_etage = 0;
+    current_cont = box(10,10)
+    remaing_h = 0
     for rect in infinite_cont.list_contain:
         if rect[0] != current_etage:
-            list_cont.append(current_cont)
-            current_cont = box(rect[1], rect[2])
+            remaing_h = 10 - rect[1]
+            list_cont.append((remaing_h, current_cont))
+            current_cont = box(10, 10)
             current_etage = rect[0]
         current_cont.add(0,rect[1],rect[2])
     list_cont.pop(0)
     return list_cont
+
+"""def best_fit_strip_algo(list_cont):
+    list_cont_updated = []
+    current_cont = box(10,10)
+    remaing_h = 10
+    for cont in list_cont:
+        if remaing_h <0:
+            list_cont_updated.append(current_cont)
+            current_cont = box(10,10)
+        current_cont.list_contain = cont.list_contain
+        remaing_h = remaing_h - current_cont.list_contain[0][1]  # l'objet le plus grand est en [0] de chaque conteneur
+    return list_cont_updated"""
+
+
 
 
 
