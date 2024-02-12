@@ -144,44 +144,6 @@ def best_fit_width_algo(current, conteneur, etage):
 
 
 
-
-
-
-
-
-
-    """
-    if etage !=0:
-        for i in range(len(conteneur.list_contain)):
-            rect = conteneur.list_contain[i]
-            if rect[0] > etage_to_check and rect[0] >0:
-                if remaing_W >= current.w:
-                    conteneur.list_contain.insert(i-1,(etage_to_check,current.h,current.w))
-                    is_fited = True
-                    break
-                etage_to_check = rect[0]
-                remaing_W = 0
-            remaing_W -= rect[2]
-    else:
-        for i in range(len(conteneur.list_contain)):
-            rect = conteneur.list_contain[i]
-            remaing_W-= rect[2]
-        if remaing_W >= current.w:
-            conteneur.add(etage,current.h,current.w)
-
-    if not is_fited :
-        conteneur.add(etage,current.h,current.w)
-
-    
-    while remaing_W > 0:
-        next_element = list_rect[0]
-        if remaing_W - next_element.w < 0:
-            break
-        else:
-            conteneur.add(etage, next_element.h, next_element.w)
-            list_rect.remove(next_element)
-            remaing_W -= next_element.w"""
-
 def findMinWidth(listRect):
     min_rect = test.rect(1000000, 1000000)
     for r in listRect:
