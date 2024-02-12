@@ -62,7 +62,7 @@ def fill_cont(list_rect, conteneur_H,conteneur_W):
 
 
 
-def etage_to_cont_raw(infinite_cont):
+def etage_to_cont(infinite_cont): # transforme juste les etage de la box infini en box independante
     list_cont = []
     current_etage = 0;
     current_cont = box(10,10)
@@ -78,37 +78,24 @@ def etage_to_cont_raw(infinite_cont):
     return list_cont
 
 
-def etage_to_opti_cont(list_cont):
+def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count et optimise l'espace
     list_opti_cont=[]
     remaing_h_current_cont = 0
     while len(list_cont) > 0:
         cont = list_cont.pop(0)
         remaing_h_current_cont = cont[0]
         current_cont = cont[1]
-        closest_match = find_closest_match(list_cont,remaing_h_current_cont)
-        if remaing_h_current_cont>0 and len(closest_match.list_contain)>0:
-            current_cont.list_contain.extend(closest_match.list_contain)
+        for cont in list_cont:
+            if 10-cont[0] <= remaing_h_current_cont:
+                last_plus_grand_etage = current_cont.list_contain[len(current_cont.list_contain)-1][0]
+                for rect in cont[1].list_contain:
+                    current_cont.add(last_plus_grand_etage+1,rect[1],rect[2])
+                list_cont.remove(cont)
+                break
         list_opti_cont.append(current_cont)
     return list_opti_cont
 
-def find_closest_match(list_cont , remaing_h):
-    closest_match = box(10,10)
-    for cont in list_cont:
-        if cont[0] <= remaing_h:
-            closest_match.list_contain = cont[1].list_contain
-    return closest_match
 
-"""def best_fit_strip_algo(list_cont):
-    list_cont_updated = []
-    current_cont = box(10,10)
-    remaing_h = 10
-    for cont in list_cont:
-        if remaing_h <0:
-            list_cont_updated.append(current_cont)
-            current_cont = box(10,10)
-        current_cont.list_contain = cont.list_contain
-        remaing_h = remaing_h - current_cont.list_contain[0][1]  # l'objet le plus grand est en [0] de chaque conteneur
-    return list_cont_updated"""
 
 
 

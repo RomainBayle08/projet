@@ -143,7 +143,37 @@ def best_fit_width_algo(current, conteneur, etage):
         return etage_to_check
 
 
+def etage_to_cont(infinite_cont): # transforme juste les etage de la box infini en box independante
+    list_cont = []
+    current_etage = 0;
+    current_cont = box(10,10)
+    remaing_h = 0
+    for rect in infinite_cont.list_contain:
+        if rect[0] > current_etage  :
+            remaing_h = 10- current_cont.list_contain[0][1]
+            list_cont.append((remaing_h, current_cont))
+            current_cont = box(10, 10)
+            current_etage = rect[0]
+        current_cont.add(0,rect[1],rect[2])
+    return list_cont
 
+
+def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count et optimise l'espace
+    list_opti_cont=[]
+    remaing_h_current_cont = 0
+    while len(list_cont) > 0: # on passe tous les conteneur de la list
+        cont = list_cont.pop(0)
+        remaing_h_current_cont = cont[0]
+        current_cont = cont[1]
+        for cont in list_cont: # pour chaque cont on regarde les cont qu'on a pas encore vu
+            if 10-cont[0] <= remaing_h_current_cont: # si l'espace residuel est bon
+                last_plus_grand_etage = current_cont.list_contain[len(current_cont.list_contain)-1][0] # on ajoute les valeurs de ce cont au cont courrant a un etage superieur
+                for rect in cont[1].list_contain:
+                    current_cont.add(last_plus_grand_etage+1,rect[1],rect[2])
+                list_cont.remove(cont)
+                break
+        list_opti_cont.append(current_cont)
+    return list_opti_cont
 
 
 
@@ -163,17 +193,15 @@ list_rect = convert_sorted_to_object_list(triHauteur(donnees))
 
 infinite_cont = infinite_strip(list_rect)
 
-#etage_to_cont = test.etage_to_cont_raw(infinite_cont)
+etage_to_cont = test.etage_to_cont(infinite_cont)
 
 
-#opti = test.etage_to_opti_cont(etage_to_cont)
-#best_fit_strip_test = test.best_fit_strip_algo(etage_to_cont)
+opti = test.etage_to_opti_cont(etage_to_cont)
+
 
 
 
 
 if __name__ == '__main__':
-
-    for rect in infinite_cont.list_contain:
-        print(rect)
-    print('\n')
+    for box in opti:
+        print(box.list_contain)
