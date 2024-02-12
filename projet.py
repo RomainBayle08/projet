@@ -144,18 +144,6 @@ def best_fit_width_algo(current, conteneur, etage):
 
 
 
-def findMinWidth(listRect):
-    min_rect = test.rect(1000000, 1000000)
-    for r in listRect:
-        if r.w < min_rect.w:
-            min_rect = r
-    listRect.remove(min_rect)
-    return min_rect
-
-
-
-
-
 
 
 
