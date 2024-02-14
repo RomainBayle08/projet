@@ -1,10 +1,33 @@
 import json as j
 
-import test
+
 
 with open("donnee_rect.json", "r") as fichier:
     # Charger les données depuis le fichier JSON
     donnees = j.load(fichier)
+
+class box:
+    H = 0
+    W = 0
+    list_contain = None
+
+    def __init__(self, h, w):
+        self.H = h
+        self.W = w
+        self.list_contain = []
+
+
+    def add(self, etage, h, w):
+        self.list_contain.append((etage, h, w))
+
+
+class rect:
+    h = 0
+    w = 0
+
+    def __init__(self, h, w):
+        self.h = h
+        self.w = w
 
 
 def fusion(l1: list, l2: list) -> list:
@@ -72,7 +95,7 @@ def convert_sorted_to_object_list(sortedList: list) -> list:
     """
     listRect: list = []
     for dic in sortedList:  # convertir chaque dictionnaire en objet 'rect'
-        current: test.rect = test.rect(dic['h'], dic['w'])
+        current: rect = rect(dic['h'], dic['w'])
         listRect.append(current)
     return listRect
 
@@ -95,17 +118,24 @@ def printConteneurs(w: int, h: int, donnees: list):
     """
     list_rect: list = convert_sorted_to_object_list(
     triHauteur(donnees))  # trie les donnees par hauteur de maniere decroissante
-    finiteConteneur: list = test.FBS(list_rect, w, h)  # on appelle la methode FBS du fichier test
+    finiteConteneur: list = FBS(list_rect, w, h)  # on appelle la methode FBS du fichier test
     for box in finiteConteneur:  # affichage des conteneurs
         for obj in box.list_contain:
             print(obj)
         print('\n')  # saut de ligne
 
 
+def FBS(list_rect,h,w):
+    infinite_cont = infinite_strip(list_rect)
+    to_etage = etage_to_cont(infinite_cont, h, w)
+    opti = best_fit_cont_algo(to_etage)
+    return opti
+
+
 
 def infinite_strip(list_rect):# retourne un conteneur (Box)
     etage = 0
-    conteneur = test.box(1000,10)
+    conteneur = box(1000,10)
 
     while len(list_rect)>0:
         current = list_rect.pop(0)
@@ -143,16 +173,16 @@ def best_fit_width_algo(current, conteneur, etage):
         return etage_to_check
 
 
-def etage_to_cont(infinite_cont): # transforme juste les etage de la box infini en box independante
+def etage_to_cont(infinite_cont,h,w): # transforme juste les etage de la box infini en box independante
     list_cont = []
     current_etage = 0;
-    current_cont = test.box(10, 10)
+    current_cont = box(h, w)
     remaing_h = 0
     for rect in infinite_cont.list_contain:
         if rect[0] > current_etage  :
             remaing_h = 10- current_cont.list_contain[0][1]
             list_cont.append((remaing_h, current_cont))
-            current_cont = test.box(10, 10)
+            current_cont = box(h, w)
             current_etage = rect[0]
         current_cont.add(0,rect[1],rect[2])
     return list_cont
@@ -191,18 +221,14 @@ list_rect_sorted = convert_sorted_to_object_list(triHauteur(donnees))
 
 #infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)), 10,10)# on appelle la methode FBS du fichier test
 
-infinite_cont = infinite_strip(list_rect_sorted)
-
-etage_to_cont = test.etage_to_cont(infinite_cont)
 
 
-#opti = test.etage_to_opti_cont(etage_to_cont)
+
+
 
 
 
 
 
 if __name__ == '__main__':
-    list_rect = convert_sorted_to_object_list(triHauteur(donnees))
-    for rect in list_rect:
-        print(rect.h,rect.w)
+    printConteneurs(10,10,donnees)
