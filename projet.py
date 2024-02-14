@@ -146,13 +146,13 @@ def best_fit_width_algo(current, conteneur, etage):
 def etage_to_cont(infinite_cont): # transforme juste les etage de la box infini en box independante
     list_cont = []
     current_etage = 0;
-    current_cont = box(10,10)
+    current_cont = test.box(10, 10)
     remaing_h = 0
     for rect in infinite_cont.list_contain:
         if rect[0] > current_etage  :
             remaing_h = 10- current_cont.list_contain[0][1]
             list_cont.append((remaing_h, current_cont))
-            current_cont = box(10, 10)
+            current_cont = test.box(10, 10)
             current_etage = rect[0]
         current_cont.add(0,rect[1],rect[2])
     return list_cont
@@ -187,21 +187,22 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
 
 
 
-list_rect = convert_sorted_to_object_list(triHauteur(donnees))
+list_rect_sorted = convert_sorted_to_object_list(triHauteur(donnees))
 
 #infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)), 10,10)# on appelle la methode FBS du fichier test
 
-infinite_cont = infinite_strip(list_rect)
+infinite_cont = infinite_strip(list_rect_sorted)
 
 etage_to_cont = test.etage_to_cont(infinite_cont)
 
 
-opti = test.etage_to_opti_cont(etage_to_cont)
+#opti = test.etage_to_opti_cont(etage_to_cont)
 
 
 
 
 
 if __name__ == '__main__':
-    for box in opti:
-        print(box.list_contain)
+    list_rect = convert_sorted_to_object_list(triHauteur(donnees))
+    for rect in list_rect:
+        print(rect.h,rect.w)
