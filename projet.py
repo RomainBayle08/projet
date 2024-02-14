@@ -1,4 +1,6 @@
 import json as j
+import matplotlib as plt
+
 
 
 
@@ -227,13 +229,13 @@ def etage_to_cont(infinite_cont,h,w): # transforme juste les etage de la box inf
     current_etage = 0;
     current_cont = box(h, w)
     remaing_h = 0
-    for rect in infinite_cont.list_contain:
-        if rect[0] > current_etage  :
+    for obj in infinite_cont.list_contain:
+        if obj[0] > current_etage  :
             remaing_h = 10- current_cont.list_contain[0][1]
             list_cont.append((remaing_h, current_cont))
             current_cont = box(h, w)
-            current_etage = rect[0]
-        current_cont.add(0,rect[1],rect[2])
+            current_etage = obj[0]
+        current_cont.add(0,obj[1],obj[2])
     return list_cont
 
 
@@ -247,13 +249,26 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
         for cont in list_cont: # pour chaque cont on regarde les cont qu'on a pas encore vu
             if 10-cont[0] <= remaing_h_current_cont: # si l'espace residuel est bon
                 last_plus_grand_etage = current_cont.list_contain[len(current_cont.list_contain)-1][0] # on ajoute les valeurs de ce cont au cont courrant a un etage superieur
-                for rect in cont[1].list_contain:
-                    current_cont.add(last_plus_grand_etage+1,rect[1],rect[2])
+                for obj in cont[1].list_contain:
+                    current_cont.add(last_plus_grand_etage+1,obj[1],obj[2])
                 list_cont.remove(cont)
                 break
         list_opti_cont.append(current_cont)
     return list_opti_cont
 
+def graphique(list):
+    fig, ax = plt.subplots()
+
+    # Ajout des boîtes à la figure
+    for boite in list:
+        rect = plt.Rectangle((0, 0), boite['w'], boite['h'], linewidth=1, edgecolor='black', facecolor='blue',
+                             alpha=0.5)
+        ax.add_patch(rect)
+
+    # Réglages d'affichage
+    ax.set_xlim(0, 15)
+    ax.set_ylim(0, 15)
+    ax.set_aspect('equal', adjustable='box')
 
 
 
@@ -263,17 +278,10 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
 
 
 
-
-
-
-list_rect_sorted = convert_sorted_to_object_list(triHauteur(donnees))
-
-#infiniteConteneur = test.FBS(convert_sorted_to_object_list(triHauteur(donnees)), 10,10)# on appelle la methode FBS du fichier test
 
 
 
 
 
 if __name__ == '__main__':
-    printConteneurs(10,10,donnees)
-
+    graphique(donnees)
