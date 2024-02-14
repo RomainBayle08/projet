@@ -1,5 +1,9 @@
 import json as j
-import matplotlib as plt
+import matplotlib
+matplotlib.use('TkAgg')  # Remplacez 'TkAgg' par un autre backend si nécessaire
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 
 
@@ -137,40 +141,6 @@ def printConteneurs(w: int, h: int, donnees: list):
             print(obj)
         print('\n')  # saut de ligne
 
-"""def sort_donnees(donnees):
-
-
-    # Triez la liste en utilisant la fonction de tri personnalisée
-    return sorted(donnees , key=lambda x: (x['h'], x['w']), reverse=True)"""
-
-
-def tri_fusion(lst):
-    if len(lst) <= 1:
-        return lst
-
-    milieu = len(lst) // 2
-    gauche = tri_fusion(lst[:milieu])
-    droite = tri_fusion(lst[milieu:])
-
-    return fusionner(gauche, droite)
-
-
-def fusionner(gauche, droite):
-    resultat = []
-    i = j = 0
-
-    while i < len(gauche) and j < len(droite):
-        if (gauche[i]['h'], gauche[i]['w']) >= (droite[j]['h'], droite[j]['w']):
-            resultat.append(gauche[i])
-            i += 1
-        else:
-            resultat.append(droite[j])
-            j += 1
-
-    resultat.extend(gauche[i:])
-    resultat.extend(droite[j:])
-
-    return resultat
 
 
 
@@ -226,7 +196,7 @@ def best_fit_width_algo(current, conteneur, etage):
 
 def etage_to_cont(infinite_cont,h,w): # transforme juste les etage de la box infini en box independante
     list_cont = []
-    current_etage = 0;
+    current_etage = 0
     current_cont = box(h, w)
     remaing_h = 0
     for obj in infinite_cont.list_contain:
@@ -243,9 +213,9 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
     list_opti_cont=[]
     remaing_h_current_cont = 0
     while len(list_cont) > 0: # on passe tous les conteneur de la list
-        cont = list_cont.pop(0)
-        remaing_h_current_cont = cont[0]
-        current_cont = cont[1]
+        cont_obj= list_cont.pop(0)
+        remaing_h_current_cont = cont_obj[0]
+        current_cont = cont_obj[1]
         for cont in list_cont: # pour chaque cont on regarde les cont qu'on a pas encore vu
             if 10-cont[0] <= remaing_h_current_cont: # si l'espace residuel est bon
                 last_plus_grand_etage = current_cont.list_contain[len(current_cont.list_contain)-1][0] # on ajoute les valeurs de ce cont au cont courrant a un etage superieur
@@ -256,32 +226,7 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
         list_opti_cont.append(current_cont)
     return list_opti_cont
 
-def graphique(list):
-    fig, ax = plt.subplots()
-
-    # Ajout des boîtes à la figure
-    for boite in list:
-        rect = plt.Rectangle((0, 0), boite['w'], boite['h'], linewidth=1, edgecolor='black', facecolor='blue',
-                             alpha=0.5)
-        ax.add_patch(rect)
-
-    # Réglages d'affichage
-    ax.set_xlim(0, 15)
-    ax.set_ylim(0, 15)
-    ax.set_aspect('equal', adjustable='box')
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
-    graphique(donnees)
+    printConteneurs(10,10,donnees)
