@@ -46,14 +46,25 @@ def fusion(l1: list, l2: list) -> list:
     SORTIE
     Liste de dictionnaires
     """
-    if len(l1) == 0:
-        return l2
-    elif len(l2) == 0:
-        return l1
-    elif l1[0]["h"] >= l2[0]["h"]:
-        return [l1[0]] + fusion(l1[1:], l2)
-    else:
-        return [l2[0]] + fusion(l1, l2[1:])
+    resultat = []
+    i = j = 0
+
+    while i < len(l1) and j < len(l2):
+        if (l1[i]['h'], l1[i]['w']) >= (l2[j]['h'], l2[j]['w']):
+            resultat.append(l1[i])
+            i += 1
+        else:
+            resultat.append(l2[j])
+            j += 1
+
+    resultat.extend(l1[i:])
+    resultat.extend(l2[j:])
+
+    return resultat
+
+
+
+
 
 
 def triHauteur(l) -> list:
@@ -124,6 +135,44 @@ def printConteneurs(w: int, h: int, donnees: list):
             print(obj)
         print('\n')  # saut de ligne
 
+"""def sort_donnees(donnees):
+
+
+    # Triez la liste en utilisant la fonction de tri personnalisée
+    return sorted(donnees , key=lambda x: (x['h'], x['w']), reverse=True)"""
+
+
+def tri_fusion(lst):
+    if len(lst) <= 1:
+        return lst
+
+    milieu = len(lst) // 2
+    gauche = tri_fusion(lst[:milieu])
+    droite = tri_fusion(lst[milieu:])
+
+    return fusionner(gauche, droite)
+
+
+def fusionner(gauche, droite):
+    resultat = []
+    i = j = 0
+
+    while i < len(gauche) and j < len(droite):
+        if (gauche[i]['h'], gauche[i]['w']) >= (droite[j]['h'], droite[j]['w']):
+            resultat.append(gauche[i])
+            i += 1
+        else:
+            resultat.append(droite[j])
+            j += 1
+
+    resultat.extend(gauche[i:])
+    resultat.extend(droite[j:])
+
+    return resultat
+
+
+
+
 
 def FBS(list_rect,h,w):
     infinite_cont = infinite_strip(list_rect)
@@ -149,8 +198,8 @@ def best_fit_width_algo(current, conteneur, etage):
 
     if etage == 0:  # si on est sur le premier etage
         if conteneur.list_contain: # si on a deja des elements
-            for rect in conteneur.list_contain: # on calcul l'espace residuel
-                remaing_W = remaing_W - rect[2]
+            for obj in conteneur.list_contain: # on calcul l'espace residuel
+                remaing_W = remaing_W - obj[2]
         if remaing_W < current.w: # si on a pas de place on passe a l'etage suivant ( le 1 )
             etage = etage + 1
         conteneur.add(etage, current.h,current.w) # on ajoute le bloc courant a l'etage souhaiter
@@ -158,15 +207,15 @@ def best_fit_width_algo(current, conteneur, etage):
 
     else:  # si on est au 2ieme etage ou plus
         for i in range(len(conteneur.list_contain)): # on passe tous les "rect" deja placer
-            rect = conteneur.list_contain[i]
-            if rect[0] > etage_to_check:  # si on change d'etage
+            current_rect = conteneur.list_contain[i]
+            if current_rect[0] > etage_to_check:  # si on change d'etage
                 if remaing_W >= current.w: # si suffisament de place pour l'object courant a l'etage n-1
                     conteneur.list_contain.insert(i, (etage_to_check, current.h, current.w)) # on l'ajoute a l'indice actuel
                     is_fited = True # on dit que le bloc a été placer
                     break
-                etage_to_check = rect[0] # vu qu'on a changer d'etage l'etage actuel deviens l'etage a l'indice i
+                etage_to_check = current_rect[0] # vu qu'on a changer d'etage l'etage actuel deviens l'etage a l'indice i
                 remaing_W = 10 # on remet a 0 le compteru de place restante
-            remaing_W -= rect[2] # on soustrait la largeur du "rect" actuel au compter
+            remaing_W -= current_rect[2] # on soustrait la largeur du "rect" actuel au compter
         etage_to_check += 1
         if not is_fited:
             conteneur.add(etage_to_check,current.h,current.w) # si l'objet courant n'a pas pu etre placer il est placer dans un nouvel etage d'ou le etage_to_check +1
@@ -225,10 +274,6 @@ list_rect_sorted = convert_sorted_to_object_list(triHauteur(donnees))
 
 
 
-
-
-
-
-
 if __name__ == '__main__':
     printConteneurs(10,10,donnees)
+
