@@ -1,11 +1,7 @@
 import json as j
-import matplotlib
-matplotlib.use('TkAgg')  # Remplacez 'TkAgg' par un autre backend si nécessaire
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 
 
+HEIGHT , WIDTH = 10
 
 
 with open("donnee_rect.json", "r") as fichier:
@@ -135,7 +131,7 @@ def printConteneurs(w: int, h: int, donnees: list):
     """
     list_rect: list = convert_sorted_to_object_list(
     triHauteur(donnees))  # trie les donnees par hauteur de maniere decroissante
-    finiteConteneur: list = FBS(list_rect, w, h)  # on appelle la methode FBS du fichier test
+    finiteConteneur: list = FBS(list_rect)  # on appelle la methode FBS du fichier test
     for box in finiteConteneur:  # affichage des conteneurs
         for obj in box.list_contain:
             print(obj)
@@ -146,9 +142,9 @@ def printConteneurs(w: int, h: int, donnees: list):
 
 
 
-def FBS(list_rect,h,w):
+def FBS(list_rect):
     infinite_cont = infinite_strip(list_rect)
-    to_etage = etage_to_cont(infinite_cont, h, w)
+    to_etage = etage_to_cont(infinite_cont)
     opti = best_fit_cont_algo(to_etage)
     return opti
 
@@ -156,7 +152,7 @@ def FBS(list_rect,h,w):
 
 def infinite_strip(list_rect):# retourne un conteneur (Box)
     etage = 0
-    conteneur = box(1000,10)
+    conteneur = box(1000,WIDTH)
 
     while len(list_rect)>0:
         current = list_rect.pop(0)
@@ -194,16 +190,16 @@ def best_fit_width_algo(current, conteneur, etage):
         return etage_to_check
 
 
-def etage_to_cont(infinite_cont,h,w): # transforme juste les etage de la box infini en box independante
+def etage_to_cont(infinite_cont): # transforme juste les etage de la box infini en box independante
     list_cont = []
     current_etage = 0
-    current_cont = box(h, w)
+    current_cont = box(HEIGHT, WIDTH)
     remaing_h = 0
     for obj in infinite_cont.list_contain:
         if obj[0] > current_etage  :
             remaing_h = 10- current_cont.list_contain[0][1]
             list_cont.append((remaing_h, current_cont))
-            current_cont = box(h, w)
+            current_cont = box(HEIGHT, WIDTH)
             current_etage = obj[0]
         current_cont.add(0,obj[1],obj[2])
     return list_cont
@@ -226,6 +222,53 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
         list_opti_cont.append(current_cont)
     return list_opti_cont
 
+
+def local_search_calcul(box):
+    alpha = 5
+    somme_h_w_box = 0
+    nb_element = len(box.list_contain)
+    nb_total_rect = len(donnees)
+    for rect in box.list_contain:
+        somme_h_w_box+=(rect.w*rect.h)
+    return alpha*(somme_h_w_box/(HEIGHT*WIDTH))-(nb_element/nb_total_rect)
+
+def weakest_bin(list_cont):
+    weakest = None
+    for cont in list_cont:
+        if weakest is None:
+            weakest = cont
+            weakest_quantity = local_search_calcul(weakest)
+        else:
+            bin_quantity = local_search_calcul(cont)
+            if bin_quantity < weakest_quantity:
+                weakest = cont
+                weakest_quantity = bin_quantity
+    return weakest
+
+def local_search(list_cont):
+    weakest = weakest_bin(list_cont)
+    while True:
+        if weakest.nb_items() == 0:
+            list_cont.remove(weakest)
+            weakest = weakest_bin(list_cont)
+        size_weakest = len(weakest.items)
+        for item in weakest.list_contain:
+            for cont in list_cont:
+                if cont != weakest:
+                    result = FBS(cont.items + [item])
+                    if len(result) == 1:
+                        list_cont.remove(cont)
+                        list_cont.apppend(result[0])
+                        weakest.items.remove(item)
+                        """ for shelf in weakest.shelves:
+                            if item in shelf.items:
+                                shelf.items.remove(item)
+                                if len(shelf.items) == 0:
+                                    weakest.shelves.remove(shelf)
+                                break
+                        break"""
+        if len(weakest.items) == size_weakest:
+            break
 
 
 if __name__ == '__main__':
