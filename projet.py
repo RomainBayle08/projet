@@ -1,8 +1,8 @@
 import json as j
 
 
-HEIGHT , WIDTH = 10
-
+HEIGHT = 10
+WIDTH = 10
 
 with open("donnee_rect.json", "r") as fichier:
     # Charger les données depuis le fichier JSON
@@ -229,7 +229,7 @@ def local_search_calcul(box):
     nb_element = len(box.list_contain)
     nb_total_rect = len(donnees)
     for rect in box.list_contain:
-        somme_h_w_box+=(rect.w*rect.h)
+        somme_h_w_box+=(rect[1]*rect[2])
     return alpha*(somme_h_w_box/(HEIGHT*WIDTH))-(nb_element/nb_total_rect)
 
 def weakest_bin(list_cont):
@@ -245,31 +245,61 @@ def weakest_bin(list_cont):
                 weakest_quantity = bin_quantity
     return weakest
 
+
+
+def cast_tuple_rect(tuple):
+    return rect(tuple[1],tuple[2])
+
 def local_search(list_cont):
-    weakest = weakest_bin(list_cont)
-    while True:
-        if weakest.nb_items() == 0:
-            list_cont.remove(weakest)
-            weakest = weakest_bin(list_cont)
-        size_weakest = len(weakest.items)
-        for item in weakest.list_contain:
-            for cont in list_cont:
-                if cont != weakest:
-                    result = FBS(cont.items + [item])
-                    if len(result) == 1:
-                        list_cont.remove(cont)
-                        list_cont.apppend(result[0])
-                        weakest.items.remove(item)
-                        """ for shelf in weakest.shelves:
-                            if item in shelf.items:
-                                shelf.items.remove(item)
-                                if len(shelf.items) == 0:
-                                    weakest.shelves.remove(shelf)
-                                break
-                        break"""
-        if len(weakest.items) == size_weakest:
+    weakest_B = weakest_bin(list_cont)
+
+    while True :
+        list_cont.remove(weakest_B) # on enleve la weakest bin de la liste
+
+        updated_list_rect = []    # on cree un nouvelle lsit de rect sans ceux de la weakest bin
+        for box in list_cont:
+            for rect in box.list_contain:
+                updated_list_rect.append(cast_tuple_rect(rect))
+
+        if not weakest_B.list_contain: # si la weakest bin est vide on en prend une autre
+            weakest_B = weakest_bin(list_cont)
+
+        init_size_weakest = len(weakest_B.list_contain) # on sauvegarde la taille initial de la WB
+
+        for rect in weakest_B.list_contain:  # on passe tous les element de la WB
+            updated_list_rect.append(cast_tuple_rect(rect)) # on ajoute l'element courant a la liste MAJ
+            new_list_cont = FBS(updated_list_rect)  # on fait le FBS sur cette liste
+            if len(new_list_cont) == len(list_cont): # si l'element est rentré la list_cont deviens la list_cont MAJ
+                list_cont = new_list_cont
+                weakest_B.list_contain.remove(rect)  # et on enleve l'element de la WB
+
+        if init_size_weakest == len(weakest_B.list_contain): # si la WB n'a pas bougé on sort
+            list_cont.append(weakest_B) # dans ce cas on remet la WB dans la list
             break
+
+    return list_cont
+
+
+
 
 
 if __name__ == '__main__':
-    printConteneurs(10,10,donnees)
+    list_cont = FBS(convert_sorted_to_object_list(triHauteur(donnees)))
+    print(len(convert_sorted_to_object_list(triHauteur(donnees))))
+    loc = local_search(list_cont)
+    somme_loc = 0
+    for box in loc:
+        somme_loc += len(box.list_contain)
+        for rect in box.list_contain:
+            print(rect)
+        print("\n")
+
+    somme_list = 0
+    print("----------")
+    for box in list_cont:
+        somme_list+=len(box.list_contain)
+        for rect in  box.list_contain:
+            print(rect)
+        print("\n")
+
+    print(somme_loc,somme_list)
