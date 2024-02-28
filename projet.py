@@ -1,4 +1,5 @@
 import json as j
+import random
 
 
 HEIGHT = 10
@@ -223,7 +224,7 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
     return list_opti_cont
 
 
-def local_search_calcul(box):
+def weakest_bin_calcul(box):
     alpha = 5
     somme_h_w_box = 0
     nb_element = len(box.list_contain)
@@ -237,9 +238,9 @@ def weakest_bin(list_cont):
     for cont in list_cont:
         if weakest is None:
             weakest = cont
-            weakest_quantity = local_search_calcul(weakest)
+            weakest_quantity = weakest_bin_calcul(weakest)
         else:
-            bin_quantity = local_search_calcul(cont)
+            bin_quantity = weakest_bin_calcul(cont)
             if bin_quantity < weakest_quantity:
                 weakest = cont
                 weakest_quantity = bin_quantity
@@ -256,10 +257,8 @@ def local_search(list_cont):
     while True :
         list_cont.remove(weakest_B) # on enleve la weakest bin de la liste
 
-        updated_list_rect = []    # on cree un nouvelle lsit de rect sans ceux de la weakest bin
-        for box in list_cont:
-            for rect in box.list_contain:
-                updated_list_rect.append(cast_tuple_rect(rect))
+        updated_list_rect = list_cont_to_list_rect(list_cont)    # on cree un nouvelle lsit de rect sans ceux de la weakest bin
+
 
         if not weakest_B.list_contain: # si la weakest bin est vide on en prend une autre
             weakest_B = weakest_bin(list_cont)
@@ -269,15 +268,43 @@ def local_search(list_cont):
         for rect in weakest_B.list_contain:  # on passe tous les element de la WB
             updated_list_rect.append(cast_tuple_rect(rect)) # on ajoute l'element courant a la liste MAJ
             new_list_cont = FBS(updated_list_rect)  # on fait le FBS sur cette liste
-            if len(new_list_cont) == len(list_cont): # si l'element est rentré la list_cont deviens la list_cont MAJ
+            if len(new_list_cont) == len(list_cont):# si l'element est rentré la list_cont deviens la list_cont MAJ
                 list_cont = new_list_cont
                 weakest_B.list_contain.remove(rect)  # et on enleve l'element de la WB
 
-        if init_size_weakest == len(weakest_B.list_contain): # si la WB n'a pas bougé on sort
+        if init_size_weakest == len(weakest_B.list_contain):# si la WB n'a pas bougé on sort
             list_cont.append(weakest_B) # dans ce cas on remet la WB dans la list
             break
 
     return list_cont
+
+
+#def shacking(list_cont , k ):
+
+
+
+
+
+def select_random_rect(list_cont, k):
+    list_rect = list_cont_to_list_rect(list_cont)
+    nb_rect = len(list_rect)
+    selected_rect =[]
+    for i in range(k):
+        selected_rect.append(list_rect[random.randint(0,nb_rect)])
+    return selected_rect
+
+
+def list_cont_to_list_rect(list_cont):
+    list_rect = []
+    for box in list_cont:
+        for rect in box.list_contain:
+            list_rect.append(cast_tuple_rect(rect))
+    return list_rect
+
+
+#def basic_variable_neighbors_search():
+
+
 
 
 
@@ -285,21 +312,15 @@ def local_search(list_cont):
 
 if __name__ == '__main__':
     list_cont = FBS(convert_sorted_to_object_list(triHauteur(donnees)))
-    print(len(convert_sorted_to_object_list(triHauteur(donnees))))
-    loc = local_search(list_cont)
+    """loc = local_search(list_cont)
     somme_loc = 0
     for box in loc:
         somme_loc += len(box.list_contain)
         for rect in box.list_contain:
             print(rect)
-        print("\n")
+        print("\n")"""
+    rand_rect = select_random_rect(list_cont,6)
+    for rect in rand_rect:
+        print(rect.h,rect.w)
 
-    somme_list = 0
-    print("----------")
-    for box in list_cont:
-        somme_list+=len(box.list_contain)
-        for rect in  box.list_contain:
-            print(rect)
-        print("\n")
 
-    print(somme_loc,somme_list)
