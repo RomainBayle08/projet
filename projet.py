@@ -172,7 +172,7 @@ def best_fit_width_algo(current, conteneur, etage):
         conteneur.add(etage, current.h,current.w) # on ajoute le bloc courant a l'etage souhaiter
         return etage
 
-    else:  # si on est au 2ieme etage ou plus
+    else:  # si on est au 2eme etage ou plus
         for i in range(len(conteneur.list_contain)): # on passe tous les "rect" deja placer
             current_rect = conteneur.list_contain[i]
             if current_rect[0] > etage_to_check:  # si on change d'etage
