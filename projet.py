@@ -129,8 +129,7 @@ def printConteneurs(w: int, h: int, donnees: list):
     SORTIE
     donnees: list -> liste de dictionnaires
     """
-    list_rect: list = convert_sorted_to_object_list(
-    triHauteur(donnees))  # trie les donnees par hauteur de maniere decroissante
+    list_rect: list = convert_sorted_to_object_list(triHauteur(donnees))  # trie les donnees par hauteur de maniere decroissante
     finiteConteneur: list = FBS(list_rect)  # on appelle la methode FBS du fichier test
     for box in finiteConteneur:  # affichage des conteneurs
         for obj in box.list_contain:
