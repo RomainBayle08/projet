@@ -284,6 +284,9 @@ def local_search(list_cont):
 
 
 
+def remove_selected_for_list(list)
+
+
 
 def select_random_rect(list_cont, k):
     list_rect = list_cont_to_list_rect(list_cont)
