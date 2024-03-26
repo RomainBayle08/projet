@@ -226,46 +226,46 @@ def insert_in_floor(rect, box, etage):
 
 
 def to_boxes(infinite_box):  # transforme juste les etage de la box infini en box independante
-    list_box = []
+    boxes = []
     current_etage = 0
     current_cont = box(HEIGHT, WIDTH)
     remaing_h = 0
     for obj in infinite_box.list_rect:
         if obj[0] > current_etage:
             remaing_h = 10 - current_cont.list_rect[0][1].h
-            list_box.append((remaing_h, current_cont))
+            boxes.append((remaing_h, current_cont))
             current_cont = box(HEIGHT, WIDTH)
             current_etage = obj[0]
         current_cont.add(0, obj[1])
     remaing_h = 10 - current_cont.list_rect[0][1].h
-    list_box.append((remaing_h, current_cont))
-    return list_box
+    boxes.append((remaing_h, current_cont))
+    return boxes
 
 
 def BF_box_algo(list_box):  # prend la liste retourner par etage_to_count et optimise l'espace
-    list_opti_box = []  #Changement ICI
-    sort_list_box = sorted(list_box, key=lambda x: x[0]) # on cree une list trier des espace residuel H croissant
+    opti_boxes = []  #Changement ICI
+    sort_boxes = sorted(list_box, key=lambda x: x[0]) # on cree une list trier des espace residuel H croissant
 
     while len(list_box) > 0: # pour chaque box
         current = list_box.pop(0)
         box = current[1]
         box_remaing_h = current[0]
-        for cont in sort_list_box: # on regarde tous les conteneur
+        for cont in sort_boxes: # on regarde tous les conteneur
             if cont[0] + box_remaing_h == 10: # si ils peuvent fusionner
                 box = fusion_boxes(box, cont[1]) # on les fusions
-                sort_list_box.remove(cont) # on retire les box des lists
+                sort_boxes.remove(cont) # on retire les box des lists
                 list_box.remove(cont) # pareil
                 break
-        sort_list_box.remove(current)# pareil
-        list_opti_box.append(box) # on ajoute la box a la lis t#Changement ICI
-    return list_opti_box  #Changement ICI
+        sort_boxes.remove(current)# pareil
+        opti_boxes.append(box) # on ajoute la box a la lis t#Changement ICI
+    return opti_boxes  #Changement ICI
 
 
 
 def fusion_boxes(box1, box2):
-    highest_etage_b1 = box1.list_rect[len(box1.list_rect) - 1][0] + 1
+    max_floor_b1 = box1.list_rect[len(box1.list_rect) - 1][0] + 1
     for rect in box2.list_rect:
-        box1.list_rect.append((rect[0] + highest_etage_b1, rect[1]))#Changement ICI
+        box1.list_rect.append((rect[0] + max_floor_b1, rect[1]))#Changement ICI
     return box1
 
 
@@ -276,12 +276,12 @@ def fusion_boxes(box1, box2):
 
 def WB_calcul(box):
     alpha = 5
-    somme_h_w_box = 0
+    sum_h_w_box = 0
     nb_element = len(box.list_rect)
     nb_total_rect = len(donnees)
     for rect in box.list_rect:
-        somme_h_w_box += (rect[1].h * rect[1].w)
-    return alpha * (somme_h_w_box / (HEIGHT * WIDTH)) - (nb_element / nb_total_rect)
+        sum_h_w_box += (rect[1].h * rect[1].w)
+    return alpha * (sum_h_w_box / (HEIGHT * WIDTH)) - (nb_element / nb_total_rect)
 
 
 def weakest_bin(list_box):#Changement ICI
