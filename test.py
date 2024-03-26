@@ -66,7 +66,7 @@ def etage_to_cont(infinite_cont): # transforme juste les etage de la box infini 
     current_etage = 0;
     current_cont = box(10,10)
     remaing_h = 0
-    for rect in infinite_cont.list_contain:
+    for rect in infinite_cont.list_rect:
 
         if rect[0] > current_etage  :
             remaing_h = 10- current_cont.list_contain[0][1]
@@ -86,8 +86,8 @@ def best_fit_cont_algo(list_cont): # prend la liste retourner par etage_to_count
         current_cont = cont[1]
         for cont in list_cont:
             if 10-cont[0] <= remaing_h_current_cont:
-                last_plus_grand_etage = current_cont.list_contain[len(current_cont.list_contain)-1][0]
-                for rect in cont[1].list_contain:
+                last_plus_grand_etage = current_cont.list_rect[len(current_cont.list_rect) - 1][0]
+                for rect in cont[1].list_rect:
                     current_cont.add(last_plus_grand_etage+1,rect[1],rect[2])
                 list_cont.remove(cont)
                 break
