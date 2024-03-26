@@ -12,8 +12,8 @@ class box:
         self.list_contain = []
 
 
-    def add(self, etage, h, w):
-        self.list_contain.append((etage, h, w))
+    def add(self, etage, rect):
+        self.list_contain.append((etage,rect))
 
 
 class rect:
@@ -49,7 +49,6 @@ def fill_cont(list_rect, conteneur_H,conteneur_W):
     remaing_H = conteneur_H - current.h
     conteneur = box(conteneur_H,conteneur_W)
     while remaing_H>=0:
-       # projet.best_fit_width_algo(list_rect, current, conteneur, etage)
         etage += 1
         if len(list_rect)>0:
             current = list_rect.pop(0)

@@ -19,8 +19,8 @@ class box:
         self.W = w
         self.list_contain = []
 
-    def add(self, etage, h, w):
-        self.list_contain.append((etage, h, w))
+    def add(self, etage,rect):
+        self.list_contain.append((etage,rect))
 
 
 class rect:
@@ -30,6 +30,9 @@ class rect:
     def __init__(self, h, w):
         self.h = h
         self.w = w
+
+    def to_string(self):
+        return " h: "+str(self.h)+" w: "+str(self.w)
 
 
 def fusion(l1: list, l2: list) -> list:
@@ -109,7 +112,7 @@ def convert_sorted_to_object_list(sortedList: list) -> list:
     return listRect
 
 
-def printConteneurs(w: int, h: int, donnees: list):
+def printConteneurs(donnees: list):
     """
     DESCRIPTION
     Procedure qui cree, rempli et affiche le contenu des conteneurs
@@ -130,14 +133,14 @@ def printConteneurs(w: int, h: int, donnees: list):
     finiteConteneur: list = FBS(list_rect)  # on appelle la methode FBS du fichier test
     for box in finiteConteneur:  # affichage des conteneurs
         for obj in box.list_contain:
-            print(obj)
+            print(obj[1],rect.to_string())
         print('\n')  # saut de ligne
 
 
 def FBS(list_rect):
     cloned_list_rect = list_rect.copy()
     infinite_cont = infinite_strip(cloned_list_rect)
-    to_etage = etage_to_cont(infinite_cont)
+    to_etage = etage_to_box(infinite_cont)
     opti = best_fit_cont_algo(to_etage)
     return opti
 
@@ -169,10 +172,10 @@ def best_fit_width_algo(current, conteneur, etage):
     if etage == 0:  # si on est sur le premier etage
         if conteneur.list_contain:  # si on a deja des elements
             for obj in conteneur.list_contain:  # on calcul l'espace residuel
-                remaing_W = remaing_W - obj[2]
+                remaing_W = remaing_W - obj[1].w #Changement ICI
         if remaing_W < current.w:  # si on a pas de place on passe a l'etage suivant ( le 1 )
             etage = etage + 1
-        conteneur.add(etage, current.h, current.w)  # on ajoute le bloc courant a l'etage souhaiter
+        conteneur.add(etage,current)  # on ajoute le bloc courant a l'etage souhaiter #Changement ICI
         return etage
 
     else:  # si on est au 2eme étage ou plus
@@ -188,7 +191,7 @@ def best_fit_width_algo(current, conteneur, etage):
             return highest_etage
         else:
             highest_etage += 1
-            conteneur.add(highest_etage, current.h, current.w)
+            conteneur.add(highest_etage, current)#Changement ICI
             return highest_etage
 
 
@@ -201,9 +204,9 @@ def residual_width_space(box):  # on regarde par etage l'espace residuel
             list_etage_residual_w.append((current_etage, residual_width))
             current_etage = rect[0]
             residual_width = 10
-        residual_width -= rect[2]
+        residual_width -= rect[1].w #Changement ICI
     list_etage_residual_w.append((current_etage, residual_width))
-    list_etage_residual_w.sort(key=lambda x: x[1])
+    list_etage_residual_w.sort(key=lambda x: x[1]) #Changement ICI
     return list_etage_residual_w
 
 
@@ -211,7 +214,7 @@ def insert_rect_in_etage(rect, box, etage):
     for i in range(len(box.list_contain)):
         current = box.list_contain[i]
         if current[0] > etage:
-            box.list_contain.insert(i, (etage, rect.h, rect.w))
+            box.list_contain.insert(i, (etage, rect)) #Changement ICI
             break
     return box
 
@@ -222,47 +225,47 @@ def insert_rect_in_etage(rect, box, etage):
 """
 
 
-def etage_to_cont(infinite_cont):  # transforme juste les etage de la box infini en box independante
-    list_cont = []
+def etage_to_box(infinite_box):  # transforme juste les etage de la box infini en box independante
+    list_box = []
     current_etage = 0
     current_cont = box(HEIGHT, WIDTH)
     remaing_h = 0
-    for obj in infinite_cont.list_contain:
+    for obj in infinite_box.list_contain:
         if obj[0] > current_etage:
-            remaing_h = 10 - current_cont.list_contain[0][1]
-            list_cont.append((remaing_h, current_cont))
+            remaing_h = 10 - current_cont.list_contain[0][1].h
+            list_box.append((remaing_h, current_cont))
             current_cont = box(HEIGHT, WIDTH)
             current_etage = obj[0]
-        current_cont.add(0, obj[1], obj[2])
-    remaing_h = 10 - current_cont.list_contain[0][1]
-    list_cont.append((remaing_h, current_cont))
-    return list_cont
+        current_cont.add(0, obj[1])
+    remaing_h = 10 - current_cont.list_contain[0][1].h
+    list_box.append((remaing_h, current_cont))
+    return list_box
 
 
-def best_fit_cont_algo(list_cont):  # prend la liste retourner par etage_to_count et optimise l'espace
-    list_opti_cont = []
-    sorted_by_H_list_cont = sorted(list_cont,key=lambda x: x[0]) # on cree une list trier des espace residuel H croissant
+def best_fit_cont_algo(list_box):  # prend la liste retourner par etage_to_count et optimise l'espace
+    list_opti_box = []  #Changement ICI
+    sorted_by_H_list_cont = sorted(list_box, key=lambda x: x[0]) # on cree une list trier des espace residuel H croissant
 
-    while len(list_cont) > 0: # pour chaque box
-        current = list_cont.pop(0)
+    while len(list_box) > 0: # pour chaque box
+        current = list_box.pop(0)
         box = current[1]
         box_remaing_h = current[0]
         for cont in sorted_by_H_list_cont: # on regarde tous les conteneur
             if cont[0] + box_remaing_h == 10: # si ils peuvent fusionner
                 box = fusion_two_box(box, cont[1]) # on les fusions
                 sorted_by_H_list_cont.remove(cont) # on retire les box des lists
-                list_cont.remove(cont) # pareil
+                list_box.remove(cont) # pareil
                 break
         sorted_by_H_list_cont.remove(current)# pareil
-        list_opti_cont.append(box) # on ajoute la box a la list
-    return list_opti_cont
+        list_opti_box.append(box) # on ajoute la box a la lis t#Changement ICI
+    return list_opti_box  #Changement ICI
 
 
 
 def fusion_two_box(box1, box2):
     highest_etage_b1 = box1.list_contain[len(box1.list_contain) - 1][0] + 1
     for rect in box2.list_contain:
-        box1.list_contain.append((rect[0] + highest_etage_b1, rect[1], rect[2]))
+        box1.list_contain.append((rect[0] + highest_etage_b1, rect[1]))#Changement ICI
     return box1
 
 
@@ -277,13 +280,13 @@ def weakest_bin_calcul(box):
     nb_element = len(box.list_contain)
     nb_total_rect = len(donnees)
     for rect in box.list_contain:
-        somme_h_w_box += (rect[1] * rect[2])
+        somme_h_w_box += (rect[1].h * rect[1].w)
     return alpha * (somme_h_w_box / (HEIGHT * WIDTH)) - (nb_element / nb_total_rect)
 
 
-def weakest_bin(list_cont):
+def weakest_bin(list_box):#Changement ICI
     weakest = None
-    for cont in list_cont:
+    for cont in list_box:#Changement ICI
         if weakest is None:
             weakest = cont
             weakest_quantity = weakest_bin_calcul(weakest)
@@ -294,9 +297,6 @@ def weakest_bin(list_cont):
                 weakest_quantity = bin_quantity
     return weakest
 
-
-def cast_tuple_rect(tuple):
-    return rect(tuple[1], tuple[2])
 
 
 def local_search(list_cont):
@@ -314,14 +314,13 @@ def local_search(list_cont):
         init_size_weakest = len(weakest_B.list_contain)  # on sauvegarde la taille initial de la WB
 
         for rect in weakest_B.list_contain:  # on passe tous les element de la WB
-            casted_rect = cast_tuple_rect(rect)
-            updated_list_rect.append(casted_rect)  # on ajoute l'element courant a la liste MAJ
+            updated_list_rect.append(rect[1])  # on ajoute l'element courant a la liste MAJ
             new_list_cont = FBS(updated_list_rect)  # on fait le FBS sur cette liste
             if len(new_list_cont) == len(list_cont):  # si l'element est rentré la list_cont deviens la list_cont MAJ
                 list_cont = new_list_cont
                 weakest_B.list_contain.remove(rect)  # et on enleve l'element de la WB
             else:
-                updated_list_rect.remove(casted_rect)
+                updated_list_rect.remove(rect[1])
         if init_size_weakest == len(weakest_B.list_contain):  # si la WB n'a pas bougé on sort
             list_cont.append(weakest_B)  # dans ce cas on remet la WB dans la list
             break
@@ -332,7 +331,7 @@ def list_cont_to_list_rect(list_cont):
     list_rect = []
     for box in list_cont:
         for rect in box.list_contain:
-            list_rect.append(cast_tuple_rect(rect))
+            list_rect.append(rect[1])
     return list_rect
 
 """
@@ -370,24 +369,8 @@ def basic_variable_neighbors_search(donnees_de_base):
 
 
 if __name__ == '__main__':
-    list_cont = FBS(convert_sorted_to_object_list(triHauteur(donnees)))
-    """loc = local_search(list_cont)
-    somme_loc = 0
-    for box in loc:
-        somme_loc += len(box.list_contain)
+    lc = basic_variable_neighbors_search(donnees)
+    for box in lc :
         for rect in box.list_contain:
-            print(rect)
+            print (rect[0],rect[1].to_string())
         print("\n")
-    rand_rect = select_random_rect(list_cont,6)
-    for rect in rand_rect:
-        print(rect.h,rect.w)
-    for box in list_cont:"""
-    loc = local_search(list_cont)
-    print(loc)
-    for box in loc:
-        # inf = infinite_strip(convert_sorted_to_object_list(triHauteur(donnees)))
-        for rect in box.list_contain:
-            print(rect)
-        print("\n")
-
-    # print(residual_width_space(infinit))
